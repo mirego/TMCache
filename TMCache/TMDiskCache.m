@@ -423,6 +423,11 @@ NSString * const TMDiskCacheSharedName = @"TMDiskCacheShared";
 
 - (void)fileURLForKey:(NSString *)key block:(TMDiskCacheObjectBlock)block
 {
+    [self fileURLForKey:key updateFileModificationDate:YES block:block];
+}
+
+- (void)fileURLForKey:(NSString *)key updateFileModificationDate:(BOOL)updateFileModificationDate block:(TMDiskCacheObjectBlock)block
+{
     NSDate *now = [[NSDate alloc] init];
 
     if (!key || !block)
@@ -438,7 +443,8 @@ NSString * const TMDiskCacheSharedName = @"TMDiskCacheShared";
         NSURL *fileURL = [strongSelf encodedFileURLForKey:key];
 
         if ([[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]]) {
-            [strongSelf setFileModificationDate:now forURL:fileURL];
+            if (updateFileModificationDate)
+                [strongSelf setFileModificationDate:now forURL:fileURL];
         } else {
             fileURL = nil;
         }
@@ -717,6 +723,11 @@ NSString * const TMDiskCacheSharedName = @"TMDiskCacheShared";
 
 - (NSURL *)fileURLForKey:(NSString *)key
 {
+    return [self fileURLForKey:key updateFileModificationDate:YES];
+}
+
+- (NSURL *)fileURLForKey:(NSString *)key updateFileModificationDate:(BOOL)updateFileModificationDate
+{
     if (!key)
         return nil;
 
@@ -724,7 +735,7 @@ NSString * const TMDiskCacheSharedName = @"TMDiskCacheShared";
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-    [self fileURLForKey:key block:^(TMDiskCache *cache, NSString *key, id <NSCoding> object, NSURL *fileURL) {
+    [self fileURLForKey:key updateFileModificationDate:updateFileModificationDate block:^(TMDiskCache *cache, NSString *key, id <NSCoding> object, NSURL *fileURL) {
         fileURLForKey = fileURL;
         dispatch_semaphore_signal(semaphore);
     }];
