@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name          = 'TMCache@mirego'
+  s.name          = 'TMCache'
   s.version       = '1.2.0-1'
   s.source_files  = 'TMCache/*.{h,m}'
   s.homepage      = 'https://github.com/tumblr/TMCache'
